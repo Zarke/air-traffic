@@ -4,13 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="main.js"></script>
+    <script src="javascript/main.js"></script>
+    <script src="javascript/handlebars.js"></script>
+    <style>
+            #plane-list {
+                font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+            
+            #plane-list td, #customers th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+            
+            #plane-list tr:nth-child(even){background-color: #f2f2f2; text-align:center }
+            
+            #plane-list tr:hover {background-color: #ddd;}
+            
+            #plane-list th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #4CAF50;
+                color: white;
+            }
+            </style>
     <title>Document</title>
 </head>
 <body>
     <p><button onclick="btnOnClick()">Show my location</button></p>
-    <ul>
-        <li id="plane"></li>
-    </ul>
+    <table id="plane-list"></table>
+    <script id="plane-list-template" type="text/x-handlebars-template">
+        
+            <tr>
+                <td>Aircraft direction</td>
+                <td>Aircraft model</td>
+                <td>Aircraft altutude (in feet)</td>
+                <td>Aircraft ID</td>
+            </tr>
+                {{#each plane_array}}
+                <tr>
+                <td style = "background-image: url({{direction}}); height: 215px;width:220px"></td>
+                <td>{{model}}</td>
+                <td>{{altitude}}</td>
+                <td>{{id}}</td>
+                <tr>
+                {{/each}}
+            </tr>
+    </script>
+</table>
 </body>
 </html>

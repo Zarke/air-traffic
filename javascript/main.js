@@ -4,6 +4,7 @@ var QUERY = null;
 var all_aircraft_data = null;
 const lng = null;
 const lat = null;
+var plane_array = [];
 //runs the geoFindMe function on load
 (() => {
   geoFindMe();
@@ -19,7 +20,7 @@ function geoFindMe() {
         function success(position) {
           let lng = position.coords.longitude;
           let lat = position.coords.latitude;
-          QUERY = `?lat=${lat}&lng=${lng}&fDstL=0&fDstU=200`;
+          QUERY = `?lat=${lat}&lng=${lng}&fDstL=0&fDstU=120`;
           console.warn("User successfuly located");
         }
   
@@ -50,20 +51,37 @@ function geoFindMe() {
     )
   }
 
-  //function for listing all data for a specific aircraft
+  //function puts individual plane information in an object and pushes it onto the array of all planes that are found
   function individual_plane_Data(plane){
-      if(plane.Trak > 180){
-        console.log("It's west bound");
+    
+    var individual_plane_info = {
+      direction: 'placeholder',
+      model:     'placeholder',
+      altitude:  'placeholder',
+      id:        'placeholder' 
+    };
+    if(plane.Trak > 180){
+        individual_plane_info.direction = "images/east.svg";
       } else {
-        console.log("It's east bound");
+        individual_plane_info.direction = "images/west.svg";
       }
-      console.log(plane.Mdl);
-      console.log(plane.Alt);
-      console.log(plane.Icao);
+      individual_plane_info.model    = plane.Mdl;
+      individual_plane_info.altitude = plane.Alt;
+      individual_plane_info.id       = plane.Icao;
+      individual_plane_info;
+      plane_array.push(individual_plane_info);
   }
-  //reloading the aircraftFeed every minute
-  setInterval(availableAircraftData,60000);
-  setInterval(extract_all_planes_data,60000);
+
+  //clears th eplane_array on every JSON update
+  function clear_plane_array(){
+    plane_array = [];
+  }
+
+  //reloading the aircraftFeed every minute and updating the aircraft list
+  setInterval(availableAircraftData,10000);
+  setInterval(clear_plane_array, 10000);
+  setInterval(extract_all_planes_data,10000);
+  setInterval(plane_list_template, 10000);
 
   //function that checks if there are planes in the users area
   function get_aircraft_list(){
@@ -80,10 +98,24 @@ function geoFindMe() {
       individual_plane_Data(plane);
     })
   }
-  
+  function plane_list_template(){
+    var templateScript = document.getElementById("plane-list-template").innerHTML;
+    var theTemplate = Handlebars.compile(templateScript);
+    var context = {
+      plane_array
+    };
+
+    // Pass our data to the template
+  var theCompiledHtml = theTemplate(context);
+  var plane_listing = document.getElementById("plane-list");
+  plane_listing.innerHTML = theCompiledHtml;
+
+  }
 
   function btnOnClick(){
     availableAircraftData();
+    clear_plane_array();
     extract_all_planes_data();
+    plane_list_template();
   }
   
